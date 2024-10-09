@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  creationTimestamp: null
+  name: mycron
+spec:
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+      name: mycron
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+        spec:
+          serviceAccount: cj-sa
+          volumes:
+          - name: userlistvol
+            configMap:
+              name: userlist
+              defaultMode: 0555
+          containers:
+          - image: quay.io/sanjuraj_rh/osejq:v1.0
+            name: mycron
+            command:
+            - /opt/userlist.sh
+            resources: {}
+            volumeMounts:
+            - name: userlistvol
+              mountPath: /opt
+          restartPolicy: OnFailure
+  schedule: '*/2 * * * *'
+status: {}
